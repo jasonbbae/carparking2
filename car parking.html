@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 차 어디 댔지? 🚗</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 120px;
+            background: 
+                /* 차체 메인 */
+                radial-gradient(ellipse 300px 120px at center, #dc2626 0%, transparent 100%),
+                /* 앞유리 */
+                radial-gradient(ellipse 200px 60px at 45% 35%, #dc2626 0%, transparent 100%),
+                /* 왼쪽 바퀴 */
+                radial-gradient(circle 25px at 25% 80%, #333 0%, transparent 100%),
+                /* 오른쪽 바퀴 */
+                radial-gradient(circle 25px at 75% 80%, #333 0%, transparent 100%);
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 35px;
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .parking-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .parking-btn {
+            padding: 18px 24px;
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .parking-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .parking-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-1f {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .btn-b1 {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .btn-b2 {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-b3 {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .current-location {
+            background: rgba(230, 235, 245, 0.8);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .location-title {
+            font-size: 15px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .location-info {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .location-time {
+            font-size: 13px;
+            color: #9ca3af;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .no-record {
+            color: #d1d5db;
+            font-style: italic;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .parking-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚗 내 차 어디 댔지?</h1>
+        
+        <div class="parking-buttons">
+            <button class="parking-btn btn-1f" onclick="recordParking('1층')">1층</button>
+            <button class="parking-btn btn-b1" onclick="recordParking('B1')">B1</button>
+            <button class="parking-btn btn-b2" onclick="recordParking('B2')">B2</button>
+            <button class="parking-btn btn-b3" onclick="recordParking('B3')">B3</button>
+        </div>
+
+        <div class="current-location" id="currentLocationBox">
+            <div class="location-title">현재 주차 위치</div>
+            <div class="location-info" id="currentLocation">기록 없음</div>
+            <div class="location-time" id="recordTime" class="no-record">주차 위치를 선택해주세요</div>
+        </div>
+
+        <button class="clear-btn" onclick="clearRecord()">기록 삭제</button>
+    </div>
+
+    <script>
+        // 페이지 로드 시 저장된 데이터 불러오기
+        window.onload = function() {
+            loadParkingRecord();
+        };
+
+        function recordParking(floor) {
+            const now = new Date();
+            const record = {
+                floor: floor,
+                timestamp: now.toISOString()
+            };
+            
+            // localStorage에 직접 저장 (운동 달력과 같은 방식)
+            localStorage.setItem('parkingRecord', JSON.stringify(record));
+            
+            updateDisplay();
+            
+            // 버튼 클릭 효과
+            const buttons = document.querySelectorAll('.parking-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent === floor) {
+                    btn.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        btn.style.transform = '';
+                    }, 150);
+                }
+            });
+        }
+
+        function clearRecord() {
+            if (confirm('주차 기록을 삭제하시겠습니까?')) {
+                localStorage.removeItem('parkingRecord');
+                updateDisplay();
+            }
+        }
+
+        function loadParkingRecord() {
+            // localStorage에서 직접 불러오기 (운동 달력과 같은 방식)
+            const savedData = localStorage.getItem('parkingRecord');
+            if (savedData) {
+                try {
+                    window.parkingRecord = JSON.parse(savedData);
+                } catch (e) {
+                    console.log('데이터 파싱 오류:', e);
+                    window.parkingRecord = null;
+                }
+            }
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const locationElement = document.getElementById('currentLocation');
+            const timeElement = document.getElementById('recordTime');
+            const currentLocationBox = document.getElementById('currentLocationBox');
+            
+            // localStorage에서 현재 데이터 가져오기
+            const savedData = localStorage.getItem('parkingRecord');
+            let record = null;
+            
+            if (savedData) {
+                try {
+                    record = JSON.parse(savedData);
+                } catch (e) {
+                    record = null;
+                }
+            }
+            
+            if (record) {
+                const recordDate = new Date(record.timestamp);
+                
+                locationElement.textContent = record.floor;
+                locationElement.className = 'location-info';
+                
+                const dateStr = recordDate.toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const timeStr = recordDate.toLocaleTimeString('ko-KR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                timeElement.textContent = `${dateStr} ${timeStr}에 기록됨`;
+                timeElement.className = 'location-time';
+                
+                // 선택한 층에 따라 배경색 변경
+                let bgColor;
+                switch(record.floor) {
+                    case '1층':
+                        bgColor = 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)';
+                        break;
+                    case 'B1':
+                        bgColor = 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%)';
+                        break;
+                    case 'B2':
+                        bgColor = 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.1) 100%)';
+                        break;
+                    case 'B3':
+                        bgColor = 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(29, 78, 216, 0.1) 100%)';
+                        break;
+                    default:
+                        bgColor = 'rgba(230, 235, 245, 0.8)';
+                }
+                currentLocationBox.style.background = bgColor;
+                currentLocationBox.style.border = '1px solid rgba(102, 126, 234, 0.25)';
+                
+            } else {
+                locationElement.textContent = '기록 없음';
+                locationElement.className = 'location-info no-record';
+                timeElement.textContent = '주차 위치를 선택해주세요';
+                timeElement.className = 'location-time no-record';
+                
+                // 기본 배경색으로 복원
+                currentLocationBox.style.background = 'rgba(230, 235, 245, 0.8)';
+                currentLocationBox.style.border = '1px solid rgba(102, 126, 234, 0.15)';
+            }
+        }
+    </script>
+</body>
+</html>
